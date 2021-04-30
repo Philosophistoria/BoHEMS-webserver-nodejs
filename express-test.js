@@ -8,8 +8,8 @@ const app = express();
 const path = require('path');
 
 // 8080番ポートで待ちうける
-app.listen(80, () => {
-  console.log('Running at Port 80...');
+app.listen(8080, () => {
+  console.log('Running at Port 8080...');
 });
 
 // 静的ファイルのルーティング
