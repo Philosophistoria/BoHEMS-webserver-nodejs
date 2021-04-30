@@ -1,6 +1,6 @@
 const wsclient = {};
 //wsclient.sock = new WebSocket("ws://127.0.0.1:5001");
-wsclient.sock = new WebSocket("ws://172.16.80.7:5001");
+wsclient.sock = new WebSocket("ws://54.168.9.34:5001");
 wsclient.playable = false;
 
 wsclient.sock.addEventListener("open", e => {
