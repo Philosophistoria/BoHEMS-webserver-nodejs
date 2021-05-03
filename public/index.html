@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta name="GCD" content="YTk3ODQ3ZWZhN2I4NzZmMzBkNTEwYjJleb043efcb25d75820681b0bfaab7b3a3"/>
+<html><head><meta name="GCD" content="YTk3ODQ3ZWZhN2I4NzZmMzBkNTEwYjJlc4fde05cd1b3c705b94d4d2b252e6f19"/>
   <meta charset="utf-8">
   <title>BoH-Web-Demo-Test</title>
   <meta name="generator" content="Google Web Designer 11.0.2.0415">
@@ -201,13 +201,17 @@ body {
     border-image-outset: 0;
     border-image-repeat: stretch;
     border-color: rgb(245, 245, 245);
+    width: 218.418px;
+    height: 48.9166px;
+    transform-origin: 50% 50% 0px;
+    -webkit-transform-origin: 50% 50% 0px;
+    -moz-transform-origin: 50% 50% 0px;
+    transform: translate3d(136.086px, 249.63px, 0px) rotateZ(0.566264deg);
+    -webkit-transform: translate3d(136.086px, 249.63px, 0px) rotateZ(0.566264deg);
+    -moz-transform: translate3d(136.086px, 249.63px, 0px) rotateZ(0.566264deg);
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
     -moz-transform-style: preserve-3d;
-    width: 218.418px;
-    transform: translate3d(136px, 267px, 0px) rotateZ(0.566264deg);
-    -webkit-transform: translate3d(136px, 267px, 0px) rotateZ(0.566264deg);
-    -moz-transform: translate3d(136px, 267px, 0px) rotateZ(0.566264deg);
 }
 .gwd-page-6nl3 {
     width: 100%;
@@ -228,7 +232,7 @@ body {
     border-image-repeat: stretch;
     border-color: transparent;
     left: 325px;
-    top: 263px;
+    top: 245px;
 }
 .gwd-label-logbox {
     position: absolute;
@@ -257,25 +261,25 @@ body {
     border-image-repeat: stretch;
     border-color: transparent;
 }
-@media (min-width: 0) and (max-width: 602px) and (min-height: 0) and (max-height: 2003px) {
+@media (min-width: 597px) and (max-width: 603px) and (min-height: 397px) and (max-height: 403px) {
     .gwd-input-1c32 {
-        left: 57px;
-        top: 354px;
+        left: 325px;
+        top: 247px;
     }
     .gwd-button-1i6t {
-        transform: translate3d(-132px, 358px, 0px) rotateZ(0.566264deg);
-        -webkit-transform: translate3d(-132px, 358px, 0px) rotateZ(0.566264deg);
-        -moz-transform: translate3d(-132px, 358px, 0px) rotateZ(0.566264deg);
+        width: 218.418px;
+        height: 50.336px;
+        transform-origin: 50% 50% 0px;
+        -webkit-transform-origin: 50% 50% 0px;
+        -moz-transform-origin: 50% 50% 0px;
+        transform: translate3d(136.093px, 248.211px, 0px) rotateZ(0.566264deg);
+        -webkit-transform: translate3d(136.093px, 248.211px, 0px) rotateZ(0.566264deg);
+        -moz-transform: translate3d(136.093px, 248.211px, 0px) rotateZ(0.566264deg);
         transform-style: preserve-3d;
         -webkit-transform-style: preserve-3d;
         -moz-transform-style: preserve-3d;
     }
-    .gwd-label-logbox {
-        left: 57px;
-        top: 439px;
-    }
-}
-@media (min-width: 597px) and (max-width: 603px) and (min-height: 397px) and (max-height: 403px) {}</style>
+}</style>
   <script data-source="googbase_min.js" data-version="4" data-exports-type="googbase" src="googbase_min.js"></script>
   <script data-source="gwd_webcomponents_v1_min.js" data-version="2" data-exports-type="gwd_webcomponents_v1" src="gwd_webcomponents_v1_min.js"></script>
   <script data-source="gwdpage_min.js" data-version="13" data-exports-type="gwd-page" src="gwdpage_min.js"></script>
@@ -308,27 +312,20 @@ body {
     gwd.FingerButton_Mousedown = function(event) {
       const domid = event.target.id;
       const index = parseInt(domid.split('_', 2)[1]);
-      gwd.actions.events.setInlineStyle('electrode_' + index, 'background-color: #FFFF55;');
-      if (wsclient.playable) {
-        wsclient.sock.send("start:" + index);
-      }
+      if (wsclient.is_connected_to_dev) wsclient.start_dev(index);
     };
     gwd.FingerButton_Mouseup = function(event) {
       const domid = event.target.id;
       const index = parseInt(domid.split('_', 2)[1]);
-      gwd.actions.events.setInlineStyle('electrode_' + index, 'background-color: #FFFFFF;');
-      if (wsclient.playable) {
-        wsclient.sock.send("stop:" + index);
-      }
+      if (wsclient.is_connected_to_dev) wsclient.stop_dev(index);
     };
     //  Connect Button Event
     gwd.testWS = function(event) {
       const name = document.getElementById("name_box").value;
-      if (!wsclient.playable) {
-        wsclient.sock.send("ping");
-        wsclient.sock.send(name + "> Can I try?");
+      if (!wsclient.is_connected_to_dev) {
+        wsclient.connect_to_dev(name);
       } else {
-        wsclient.sock.send("disconnect");
+        wsclient.disconnect_from_dev();
       }
     }
   </script>
