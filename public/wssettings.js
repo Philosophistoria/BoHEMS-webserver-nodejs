@@ -6,7 +6,7 @@ wsclient.is_connected_to_dev = false;
 const reset_connect_button = () => {
   wsclient.button = wsclient.button || document.getElementById("connect");
   wsclient.is_connected_to_dev = false;
-  wsclient.button.innerText = "Connect to EMS";
+  wsclient.button.innerText = "Try the remote EMS";
 }
 
 const wrilte_nl_in_logbox = (str_nl) => {
@@ -27,7 +27,7 @@ wsclient.sock.addEventListener("message", e => {
     if (str[0] === "accepted"){
       wsclient.is_connected_to_dev = true;
       wrilte_nl_in_logbox("Your turn! > @" + str[1]);
-      wsclient.button.innerText = "Dismiss now";
+      wsclient.button.innerText = "Release the control now";
     }
     else if (str[0] === "rejected"){
       wrilte_nl_in_logbox("Sorry, now @" + str[1]);
@@ -47,7 +47,7 @@ wsclient.sock.addEventListener("message", e => {
       if(str_0[0] === "time"){
         wsclient.button.innerText = str[1] + "'s turn ends in " + str_0[1];
         if (wsclient.is_connected_to_dev){
-          wsclient.button.innerHTML += "<br /> Dismiss now"
+          wsclient.button.innerHTML += "<br /> or Release the control now"
         }
       }
       else if(str_0[0] === "start"){
