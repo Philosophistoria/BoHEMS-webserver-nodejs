@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta name="GCD" content="YTk3ODQ3ZWZhN2I4NzZmMzBkNTEwYjJl050f3548e67c87a76b91fdfa92e2c7a8"/>
+<html><head><meta name="GCD" content="YTk3ODQ3ZWZhN2I4NzZmMzBkNTEwYjJl2628f2b389a62dea98b16d5d80e3d17a"/>
   <meta charset="utf-8">
   <title>BoH-Web-Demo-Test</title>
   <meta name="generator" content="Google Web Designer 11.0.2.0415">
@@ -330,7 +330,8 @@ body {
     };
     //  Connect Button Event
     gwd.testWS = function(event) {
-      const name = document.getElementById("name_box").value;
+      let name = document.getElementById("name_box").value;
+      if(name == '') name = "anonymous";
       if (!wsclient.is_connected_to_dev) {
         wsclient.connect_to_dev(name);
       } else {

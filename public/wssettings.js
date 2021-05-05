@@ -33,21 +33,21 @@ wsclient.sock.addEventListener("message", e => {
       wrilte_nl_in_logbox("Sorry, now @" + str[1]);
     }
     else if (str[0] === "connected"){
-      wrilte_nl_in_logbox("@server> @" + str[1]);
+      wrilte_nl_in_logbox("@" + str[1] + " has got it started.");
     }
     else if (str[0] === "disconnected"){
       if(wsclient.is_connected_to_dev) {
         wrilte_nl_in_logbox("You has been disconnected");
       }
       reset_connect_button();
-      wrilte_nl_in_logbox("@server> @" + str[1] + " finished.");
+      wrilte_nl_in_logbox("@" + str[1] + " has released the control. Another attendee can try it now!");
     }
     else if (str[0].match(':')){
       const str_0 = str[0].split(':');
       if(str_0[0] === "time"){
-        wsclient.button.innerText = str[1] + "'s turn ends in " + str_0[1];
+        wsclient.button.innerText = "@" + str[1] + "'s turn ends in " + str_0[1];
         if (wsclient.is_connected_to_dev){
-          wsclient.button.innerHTML += "<br /> or Release the control now"
+          wsclient.button.innerHTML += " or <b>Release the control now</b>"
         }
       }
       else if(str_0[0] === "start"){
