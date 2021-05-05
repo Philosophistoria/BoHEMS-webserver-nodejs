@@ -76,7 +76,7 @@ wsclient.sock.addEventListener("error", e => {
 });
 
 wsclient.connect_to_dev = (name) => {
-  wsclient.sock.send(name + "> Can I try?");
+wsclient.sock.send(name + "#Can I try?");
 };
 
 wsclient.disconnect_from_dev = () => {

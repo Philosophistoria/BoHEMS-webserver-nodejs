@@ -11,7 +11,9 @@ function connect_to(ws, player_name) {
 	tryable = false;
 	ws.playable = true;
 	current_player.name += player_name;
+	console.log(current_player.name);
 	current_player.name = current_player.name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'').slice(0,10);
+	console.log(current_player.name);
 	current_player.ws = ws;
 	const retmessage = "connected@" + current_player.name;
 	s.clients.forEach(client => {
@@ -60,7 +62,7 @@ s.on("connection", ws => {
 			ws.send("pong");
 		}
 		else if (message.match("Can I try?")) {
-			const name = message.split('>')[0];
+			let name = message.split('#')[0];
 			if (name.match('admin%')) {
 				if (name.split('%')[1] == "dismiss") {
 					disconnect_off(current_player.ws);
