@@ -37,7 +37,12 @@ wsclient.sock.addEventListener("message", ev => {
   // parse payload
   // A json type message is supposed to contain
   // - response: {"Can I try?", "disconnect", "start", "stop", "time"},
-  // - option : {1,2,3,4}; when "start" is requested, {1-60}; when time ticks;
+  // - option : 
+  // --- {1-60}; when time ticks;
+  // --- {finger : [1,2,3,4], type: [0,1,2]}; when "start" is requested; 
+  // ----- type 0 -> click&hold
+  // ----- type 1 -> click then 1sec stim
+  // ----- type 2 -> undefined 
   // - name : name who requests
   try {
     message_type = 'JSON';
@@ -81,10 +86,10 @@ wsclient.sock.addEventListener("message", ev => {
       }
     }
     else if(message.response == "start"){
-      gwd.actions.events.setInlineStyle('electrode_' + message.option, 'background-color: #FFFF55;');
+      gwd.actions.events.setInlineStyle('electrode_' + message.option.finger, 'background-color: #FFFF55;');
     }
     else if(message.response == "stop"){
-      gwd.actions.events.setInlineStyle('electrode_' + message.option, 'background-color: #FFFFFF;');
+      gwd.actions.events.setInlineStyle('electrode_' + message.option.finger, 'background-color: #FFFFFF;');
     }
   }
   else {
@@ -110,9 +115,9 @@ wsclient.disconnect_from_dev = () => {
 };
 
 wsclient.start_dev = (index) => {
-  send_request("start", index, undefined);
+  send_request("start", {finger: index, type: 1}, undefined);
 }
 
 wsclient.stop_dev = (index) => {
-  send_request("stop", index, undefined);
+  send_request("stop", {finger: index, type: 1}, undefined);
 }
