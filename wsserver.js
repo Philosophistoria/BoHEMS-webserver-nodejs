@@ -6,7 +6,13 @@ let current_player = {
 	ws: {},
 	intervalID: {},
 	playtimeoutlimit: 60,//[s]
-	timeclock: 0//[s]
+	timeclock: 0,//[s]
+	stim: {
+		1: undefined ,
+		2: undefined ,
+		3: undefined ,
+		4: undefined 
+	}
 };
 
 function send_response(arg_ws, arg_res, arg_opt, arg_name) {
@@ -108,19 +114,48 @@ s.on("connection", ws => {
 				}
 			}
 			else if (message.request == "start" && ws.playable) {
-				broadcast_all(message.request, message.option, message.name);
-				if (message.option.type == '1') {
-					setTimeout(broadcast_all, 1000, 'stop', message.option, message.name);
-				}
-				console.log("Server conducts: " + message);
+				startstim(message.option, message.name);
 			}
-			else if (message.request == 'stop' && ws.playable && message.option.type == '0') {
-				broadcast_all(message.request, message.option, message.name);
-				console.log("Server conducts: " + message);
+			else if (message.request == 'stop' && ws.playable) {
+				stopstim(message.option, message.name, false);
 			}
 
 		}
 	});
 });
-
+function startstim(option, name) {
+	if (option.type == '1') {
+		stopall();
+	}
+	broadcast_all("start", option, name);
+	current_player.stim[option.finger] = option.type;
+	if (option.type == '1' || option.type == '2') {
+		setTimeout(stopstim, 1000, option, name, true);
+	}
+}
+function stopstim(option, name, isTimeout) {
+	if (option.type == '0' || option.type != '0' && isTimeout) {
+		broadcast_all("stop", option, name);
+		current_player.stim[option.finger] = undefined;
+	}
+	// for safety
+	if (option.type != '0'){
+		for (let i = 1; i < 5; i++) {
+			if (current_player.stim[i] == '0') {
+				broadcast_all("stop", { finger: i }, undefined);
+				current_player.stim[i] = undefined;
+				console.log("Server conducts: stop stimulate");
+			}
+		}
+	}
+}
+function stopall() {
+	for (let i = 1; i < 5; i++) {
+		if (current_player.stim[i] != undefined) {
+			broadcast_all("stop", { finger: i }, undefined);
+			current_player.stim[i] = undefined;
+			console.log("Server conducts: stop stimulate");
+		}
+	}
+}
 console.log("wating at port:5001");

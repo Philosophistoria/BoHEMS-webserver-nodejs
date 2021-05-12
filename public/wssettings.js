@@ -1,6 +1,6 @@
 const wsclient = {};
-//wsclient.sock = new WebSocket("ws://127.0.0.1:5001");
-wsclient.sock = new WebSocket("ws://54.168.9.34:5001");
+wsclient.sock = new WebSocket("ws://127.0.0.1:5001");
+//wsclient.sock = new WebSocket("ws://54.168.9.34:5001");
 wsclient.is_connected_to_dev = false;
 
 const reset_connect_button = () => {
@@ -114,10 +114,10 @@ wsclient.disconnect_from_dev = () => {
   send_request("disconnect", undefined, undefined);
 };
 
-wsclient.start_dev = (index) => {
-  send_request("start", {finger: index, type: 1}, undefined);
+wsclient.start_dev = (index, stim_type) => {
+  send_request("start", {finger: index, type: stim_type}, undefined);
 }
 
-wsclient.stop_dev = (index) => {
-  send_request("stop", {finger: index, type: 1}, undefined);
+wsclient.stop_dev = (index, stim_type) => {
+  send_request("stop", {finger: index, type: stim_type}, undefined);
 }
