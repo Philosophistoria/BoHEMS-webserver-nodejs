@@ -11,7 +11,11 @@ const reset_connect_button = () => {
 
 const wrilte_nl_in_logbox = (str_nl) => {
   wsclient.logbox = wsclient.logbox || document.getElementById("log_box");
-  wsclient.logbox.innerHTML = "* " + str_nl + "<br /> " + wsclient.logbox.innerHTML;
+  wsclient.logbox.lastline = wsclient.logbox.lastline || '';
+  wsclient.logbox.oldlines = wsclient.logbox.oldlines || '';
+  wsclient.logbox.oldlines = "* " + wsclient.logbox.lastline + "<br /> " + wsclient.logbox.oldlines;
+  wsclient.logbox.innerHTML = "* " + str_nl + "<br /> ----- new line ----- <br /><br />" + wsclient.logbox.oldlines;
+  wsclient.logbox.lastline = str_nl;
 }
 
 wsclient.sock.addEventListener("open", e => {
@@ -19,52 +23,74 @@ wsclient.sock.addEventListener("open", e => {
   reset_connect_button();
 });
 
-wsclient.sock.addEventListener("message", e => {
-  console.log("event as getting message from the server");
+const send_request = (arg_request, arg_option, arg_name) => {
+  wsclient.sock.send(JSON.stringify({
+    request: arg_request,
+    option: arg_option,
+    name: arg_name
+  }));
+}
+
+wsclient.sock.addEventListener("message", ev => {
+  let message_type = undefined;
+  let message = {};
+  // parse payload
+  // A json type message is supposed to contain
+  // - response: {"Can I try?", "disconnect", "start", "stop", "time"},
+  // - option : {1,2,3,4}; when "start" is requested, {1-60}; when time ticks;
+  // - name : name who requests
+  try {
+    message_type = 'JSON';
+    message = JSON.parse(ev.data);
+  } catch (err) {
+    if (typeof (ev.data) === String) {
+      message_type = 'String';
+      message = ev.data;
+    }
+  } finally {
+    console.log("Message Event from server: " + ev.data);
+  }
   wsclient.button = wsclient.button || document.getElementById("connect");
-  if (e.data.match('@')){
-    const str = e.data.split('@');
-    if (str[0] === "accepted"){
+  // response
+  if (message_type == 'String'){
+    wrilte_nl_in_logbox("@server> " + ev.data);
+  }
+  if (message_type == 'JSON'){
+    if (message.response == "accepted"){
       wsclient.is_connected_to_dev = true;
-      wrilte_nl_in_logbox("Your turn! > @" + str[1]);
+      wrilte_nl_in_logbox("Your turn! > @" + message.name);
       wsclient.button.innerText = "Release the control now";
     }
-    else if (str[0] === "rejected"){
-      wrilte_nl_in_logbox("Sorry, now @" + str[1]);
+    else if (message.response == "rejected"){
+      wrilte_nl_in_logbox("Sorry, now @" + message.name);
     }
-    else if (str[0] === "connected"){
-      wrilte_nl_in_logbox("@" + str[1] + " has got it started.");
+    else if (message.response == "connected"){
+      wrilte_nl_in_logbox("@" + message.name + " has got it started.");
     }
-    else if (str[0] === "disconnected"){
+    else if (message.response == "disconnected"){
       if(wsclient.is_connected_to_dev) {
         wrilte_nl_in_logbox("You has been disconnected");
       }
       reset_connect_button();
-      wrilte_nl_in_logbox("@" + str[1] + " has released the control. Another attendee can try it now!");
+      wrilte_nl_in_logbox("@" + message.name + " has released the control. Another attendee can try it now!");
     }
-    else if (str[0].match(':')){
-      const str_0 = str[0].split(':');
-      if(str_0[0] === "time"){
-        wsclient.button.innerText = "@" + str[1] + "'s turn ends in " + str_0[1];
-        if (wsclient.is_connected_to_dev){
-          wsclient.button.innerHTML += " or <b>Release the control now</b>"
-        }
+    else if (message.response == "time"){
+      wsclient.button.innerText = "@" + message.name + "'s turn ends in " + message.option;
+      if (wsclient.is_connected_to_dev){
+        wsclient.button.innerHTML += " or <b>Release the control now</b>"
       }
-      else if(str_0[0] === "start"){
-        gwd.actions.events.setInlineStyle('electrode_' + str_0[1], 'background-color: #FFFF55;');
-      }
-      else if(str_0[0] === "stop"){
-        gwd.actions.events.setInlineStyle('electrode_' + str_0[1], 'background-color: #FFFFFF;');
-      }
-      console.log(str_0);
     }
-    else {
-      wrilte_nl_in_logbox("@server> " + e.data);
+    else if(message.response == "start"){
+      gwd.actions.events.setInlineStyle('electrode_' + message.option, 'background-color: #FFFF55;');
+    }
+    else if(message.response == "stop"){
+      gwd.actions.events.setInlineStyle('electrode_' + message.option, 'background-color: #FFFFFF;');
     }
   }
   else {
     wrilte_nl_in_logbox("@server> " + e.data);
   }
+
 });
 
 wsclient.sock.addEventListener("close", e => {
@@ -76,17 +102,17 @@ wsclient.sock.addEventListener("error", e => {
 });
 
 wsclient.connect_to_dev = (name) => {
-wsclient.sock.send(name + "#Can I try?");
+  send_request("Can I try?", undefined, name);
 };
 
 wsclient.disconnect_from_dev = () => {
-  wsclient.sock.send("disconnect");
+  send_request("disconnect", undefined, undefined);
 };
 
 wsclient.start_dev = (index) => {
-  wsclient.sock.send("start:" + index);
+  send_request("start", index, undefined);
 }
 
 wsclient.stop_dev = (index) => {
-  wsclient.sock.send("stop:" + index);
+  send_request("stop", index, undefined);
 }
